@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketFlow - React</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 8px;
+            --max-width: 1440px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--surface-color);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--surface-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--background-color);
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6rem 0 8rem;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f8fafc' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") bottom center no-repeat;
+            background-size: cover;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+
+        .circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 100px;
+            left: 5%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Auth Styles */
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .auth-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1rem 0;
+        }
+
+        .stat-number.open { color: var(--success-color); }
+        .stat-number.in-progress { color: var(--warning-color); }
+        .stat-number.closed { color: var(--text-secondary); }
+
+        /* Tickets Grid */
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .ticket-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-header h3 {
+            margin: 0;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .status-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-open {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-closed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .ticket-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ticket-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Toast Styles */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+        }
+
+        .toast {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            min-width: 300px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            border-left-color: var(--success-color);
+        }
+
+        .toast.error {
+            border-left-color: var(--error-color);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tickets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .ticket-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 4rem 0 6rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, createContext, useContext, useCallback } = React;
+
+        // Context for Toast
+        const ToastContext = createContext();
+
+        const ToastProvider = ({ children }) => {
+            const [toasts, setToasts] = useState([]);
+
+            const showToast = (message, type = 'info') => {
+                const id = Date.now();
+                const toast = { id, message, type };
+                
+                setToasts(prev => [...prev, toast]);
+                
+                setTimeout(() => {
+                    setToasts(prev => prev.filter(t => t.id !== id));
+                }, 3000);
+            };
+
+            return (
+                <ToastContext.Provider value={{ showToast }}>
+                    {children}
+                    <div className="toast-container">
+                        {toasts.map(toast => (
+                            <div key={toast.id} className={'toast ${toast.type}'}>
+                                {toast.message}
+                            </div>
+                        ))}
+                    </div>
+                </ToastContext.Provider>
+            );
+        };
+
+        const useToast = () => {
+            const context = useContext(ToastContext);
+            if (!context) {
+                throw new Error('useToast must be used within a ToastProvider');
+            }
+            return context;
+        };
+
+        // Context for Auth
+        const AuthContext = createContext();
+
+        const useAuth = () => {
+            const context = useContext(AuthContext);
+            if (!context) {
+                throw new Error('useAuth must be used within an AuthProvider');
+            }
+            return context;
+        };
+
+        const AuthProvider = ({ children }) => {
+            const [user, setUser] = useState(() => {
+                const saved = localStorage.getItem('ticketapp_session');
+                return saved ? JSON.parse(saved) : null;
+            });
+            const [loading, setLoading] = useState(false);
+
+            useEffect(() => {
+                if (user) {
+                    localStorage.setItem('ticketapp_session', JSON.stringify(user));
+                } else {
+                    localStorage.removeItem('ticketapp_session');
+                }
+            }, [user]);
+
+            const login = async (email, password) => {
+                setLoading(true);
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    if (email && password) {
+                        const userData = {
+                            id: Date.now(),
+                            email,
+                            name: email.split('@')[0],
+                            token: 'token_${Date.now()}'
+                        };
+                        setUser(userData);
+                        return { success: true };
+                    } else {
+                        throw new Error('Invalid credentials');
+                    }
+                } catch (error) {
+                    return { success: false, error: error.message };
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const signup = async (email, password, confirmPassword) => {
+                setLoading(true);
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    if (password !== confirmPassword) {
+                        throw new Error('Passwords do not match');
+                    }
+                    
+                    if (email && password) {
+                        const userData = {
+                            id: Date.now(),
+                            email,
+                            name: email.split('@')[0],
+                            token: 'token_${Date.now()}'
+                        };
+                        setUser(userData);
+                        return { success: true };
+                    } else {
+                        throw new Error('Invalid registration data');
+                    }
+                } catch (error) {
+                    return { success: false, error: error.message };
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const logout = () => {
+                setUser(null);
+            };
+
+            const value = {
+                user,
+                login,
+                signup,
+                logout,
+                loading,
+                isAuthenticated: !!user
+            };
+
+            return (
+                <AuthContext.Provider value={value}>
+                    {children}
+                </AuthContext.Provider>
+            );
+        };
+
+        // Context for Tickets
+        const TicketContext = createContext();
+
+        const useTickets = () => {
+            const context = useContext(TicketContext);
+            if (!context) {
+                throw new Error('useTickets must be used within a TicketProvider');
+            }
+            return context;
+        };
+
+        const TicketProvider = ({ children }) => {
+            const [tickets, setTickets] = useState(() => {
+                const saved = localStorage.getItem('ticketapp_tickets');
+                return saved ? JSON.parse(saved) : [];
+            });
+            const [loading, setLoading] = useState(false);
+
+            useEffect(() => {
+                localStorage.setItem('ticketapp_tickets', JSON.stringify(tickets));
+            }, [tickets]);
+
+            const createTicket = async (ticketData) => {
+                setLoading(true);
+                try {
+                    const newTicket = {
+                        id: Date.now(),
+                        ...ticketData,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    setTickets(prev => [newTicket, ...prev]);
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const updateTicket = async (id, ticketData) => {
+                setLoading(true);
+                try {
+                    setTickets(prev => prev.map(ticket => 
+                        ticket.id === id 
+                            ? { ...ticket, ...ticketData, updatedAt: new Date().toISOString() }
+                            : ticket
+                    ));
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const deleteTicket = async (id) => {
+                setLoading(true);
+                try {
+                    setTickets(prev => prev.filter(ticket => ticket.id !== id));
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const getTicketStats = () => {
+                const total = tickets.length;
+                const open = tickets.filter(t => t.status === 'open').length;
+                const inProgress = tickets.filter(t => t.status === 'in_progress').length;
+                const closed = tickets.filter(t => t.status === 'closed').length;
+
+                return { total, open, inProgress, closed };
+            };
+
+            const value = {
+                tickets,
+                createTicket,
+                updateTicket,
+                deleteTicket,
+                getTicketStats,
+                loading
+            };
+
+            return (
+                <TicketContext.Provider value={value}>
+                    {children}
+                </TicketContext.Provider>
+            );
+        };
+
+        // Protected Route Component
+        const ProtectedRoute = ({ children }) => {
+            const { isAuthenticated } = useAuth();
+            const { showToast } = useToast();
+
+            useEffect(() => {
+                if (!isAuthenticated) {
+                    showToast('Please log in to access this page', 'error');
+                }
+            }, [isAuthenticated, showToast]);
+
+            if (!isAuthenticated) {
+                return React.createElement(Login);
+            }
+
+            return children;
+        };
+
+        // Header Component
+        const Header = ({ onLogout }) => {
+            const { isAuthenticated, user } = useAuth();
+
+            return (
+                <header className="header">
+                    <div className="container">
+                        <div className="header-content">
+                            <a href="#/" className="logo">TicketFlow</a>
+                            <nav className="nav-links">
+                                {isAuthenticated ? (
+                                    <>
+                                        <a href="#/dashboard">Dashboard</a>
+                                        <a href="#/tickets">Tickets</a>
+                                        <button onClick={onLogout} className="btn btn-secondary btn-sm">Logout</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <a href="#/auth/login">Login</a>
+                                        <a href="#/auth/signup">Sign Up</a>
+                                    </>
+                                )}
+                            </nav>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        // Footer Component
+        const Footer = () => {
+            return (
+                <footer className="footer">
+                    <div className="container">
+                        <div className="footer-content">
+                            <p>&copy; 2024 TicketFlow. All rights reserved.</p>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        // Card Component
+        const Card = ({ children, className = '' }) => {
+            return (
+                <div className={'card ${className}'}>
+                    {children}
+                </div>
+            );
+        };
+
+        // Button Component
+        const Button = ({ children, className = '', ...props }) => {
+            return (
+                <button className={'btn ${className}'} {...props}>
+                    {children}
+                </button>
+            );
+        };
+
+        // Modal Component
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>{title}</h2>
+                            <button onClick={onClose} className="modal-close">&times;</button>
+                        </div>
+                        <div className="modal-body">
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Landing Page
+        const Landing = () => {
+            return (
+                <div className="landing-page">
+                    <Header />
+                    
+                    <section className="hero">
+                        <div className="hero-background">
+                            <div className="wave"></div>
+                            <div className="circle circle-1"></div>
+                            <div className="circle circle-2"></div>
+                        </div>
+                        <div className="container">
+                            <div className="hero-content">
+                                <h1>TicketFlow</h1>
+                                <p className="hero-description">
+                                    Streamline your support process with our powerful ticket management system. 
+                                    Track, prioritize, and resolve issues efficiently.
+                                </p>
+                                <div className="hero-actions">
+                                    <a href="#/auth/login" className="btn btn-primary">
+                                        Login
+                                    </a>
+                                    <a href="#/auth/signup" className="btn btn-secondary">
+                                        Get Started
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="features">
+                        <div className="container">
+                            <h2>Why Choose TicketFlow?</h2>
+                            <div className="features-grid">
+                                <div className="feature-card card">
+                                    <div className="feature-icon">🚀</div>
+                                    <h3>Fast & Efficient</h3>
+                                    <p>Manage tickets with lightning speed and intuitive workflows.</p>
+                                </div>
+                                <div className="feature-card card">
+                                    <div className="feature-icon">🔒</div>
+                                    <h3>Secure & Reliable</h3>
+                                    <p>Your data is protected with enterprise-grade security measures.</p>
+                                </div>
+                                <div className="feature-card card">
+                                    <div className="feature-icon">📊</div>
+                                    <h3>Smart Analytics</h3>
+                                    <p>Gain insights with comprehensive reporting and analytics.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        // Login Component
+        const Login = () => {
+            const [form, setForm] = useState({
+                email: '',
+                password: ''
+            });
+            const [errors, setErrors] = useState({});
+            const { login, loading } = useAuth();
+            const { showToast } = useToast();
+
+            const validateForm = () => {
+                const newErrors = {};
+                
+                if (!form.email) {
+                    newErrors.email = 'Email is required';
+                } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+                    newErrors.email = 'Email is invalid';
+                }
+                
+                if (!form.password) {
+                    newErrors.password = 'Password is required';
+                } else if (form.password.length < 6) {
+                    newErrors.password = 'Password must be at least 6 characters';
+                }
+
+                setErrors(newErrors);
+                return Object.keys(newErrors).length === 0;
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    showToast('Please fix the form errors', 'error');
+                    return;
+                }
+
+                const result = await login(form.email, form.password);
+
+                if (result.success) {
+                    showToast('Welcome back!', 'success');
+                    window.location.hash = '#/dashboard';
+                } else {
+                    showToast(result.error || 'Login failed', 'error');
+                }
+            };
+
+            const handleChange = (e) => {
+                setForm({
+                    ...form,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            return (
+                <div className="auth-page">
+                    <Header />
+                    
+                    <div className="container">
+                        <div className="auth-container">
+                            <div className="auth-card">
+                                <h2>Welcome Back</h2>
+                                <p className="auth-subtitle">Sign in to your account</p>
+                                
+                                <form onSubmit={handleSubmit} className="auth-form">
+                                    <div className="form-group">
+                                        <label htmlFor="email">Email Address</label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={form.email}
+                                            onChange={handleChange}
+                                            className={errors.email ? 'error' : ''}
+                                            required
+                                        />
+                                        {errors.email && <span className="error-message">{errors.email}</span>}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="password">Password</label>
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            value={form.password}
+                                            onChange={handleChange}
+                                            className={errors.password ? 'error' : ''}
+                                            required
+                                        />
+                                        {errors.password && <span className="error-message">{errors.password}</span>}
+                                    </div>
+
+                                    <Button 
+                                        type="submit" 
+                                        disabled={loading}
+                                        className="btn-primary btn-full"
+                                    >
+                                        {loading ? 'Signing in...' : 'Sign In'}
+                                    </Button>
+                                </form>
+
+                                <div className="auth-footer">
+                                    <p>
+                                        Don't have an account? 
+                                        <a href="#/auth/signup" className="auth-link">Sign up</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        // Signup Component
+        const Signup = () => {
+            const [form, setForm] = useState({
+                email: '',
+                password: '',
+                confirmPassword: ''
+            });
+            const [errors, setErrors] = useState({});
+            const { signup, loading } = useAuth();
+            const { showToast } = useToast();
+
+            const validateForm = () => {
+                const newErrors = {};
+                
+                if (!form.email) {
+                    newErrors.email = 'Email is required';
+                } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+                    newErrors.email = 'Email is invalid';
+                }
+                
+                if (!form.password) {
+                    newErrors.password = 'Password is required';
+                } else if (form.password.length < 6) {
+                    newErrors.password = 'Password must be at least 6 characters';
+                }
+                
+                if (!form.confirmPassword) {
+                    newErrors.confirmPassword = 'Please confirm your password';
+                } else if (form.password !== form.confirmPassword) {
+                    newErrors.confirmPassword = 'Passwords do not match';
+                }
+
+                setErrors(newErrors);
+                return Object.keys(newErrors).length === 0;
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    showToast('Please fix the form errors', 'error');
+                    return;
+                }
+
+                const result = await signup(form.email, form.password, form.confirmPassword);
+
+                if (result.success) {
+                    showToast('Account created successfully!', 'success');
+                    window.location.hash = '#/dashboard';
+                } else {
+                    showToast(result.error || 'Signup failed', 'error');
+                }
+            };
+
+            const handleChange = (e) => {
+                setForm({
+                    ...form,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            return (
+                <div className="auth-page">
+                    <Header />
+                    
+                    <div className="container">
+                        <div className="auth-container">
+                            <div className="auth-card">
+                                <h2>Create Account</h2>
+                                <p className="auth-subtitle">Sign up for a new account</p>
+                                
+                                <form onSubmit={handleSubmit} className="auth-form">
+                                    <div className="form-group">
+                                        <label htmlFor="email">Email Address</label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={form.email}
+                                            onChange={handleChange}
+                                            className={errors.email ? 'error' : ''}
+                                            required
+                                        />
+                                        {errors.email && <span className="error-message">{errors.email}</span>}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="password">Password</label>
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            value={form.password}
+                                            onChange={handleChange}
+                                            className={errors.password ? 'error' : ''}
+                                            required
+                                        />
+                                        {errors.password && <span className="error-message">{errors.password}</span>}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="confirmPassword">Confirm Password</label>
+                                        <input
+                                            type="password"
+                                            id="confirmPassword"
+                                            name="confirmPassword"
+                                            value={form.confirmPassword}
+                                            onChange={handleChange}
+                                            className={errors.confirmPassword ? 'error' : ''}
+                                            required
+                                        />
+                                        {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                                    </div>
+
+                                    <Button 
+                                        type="submit" 
+                                        disabled={loading}
+                                        className="btn-primary btn-full"
+                                    >
+                                        {loading ? 'Creating Account...' : 'Sign Up'}
+                                    </Button>
+                                </form>
+
+                                <div className="auth-footer">
+                                    <p>
+                                        Already have an account? 
+                                        <a href="#/auth/login" className="auth-link">Sign in</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        // Dashboard Component
+        const Dashboard = () => {
+            const { user, logout } = useAuth();
+            const { getTicketStats } = useTickets();
+            const stats = getTicketStats();
+
+            return (
+                <div className="dashboard-page">
+                    <Header onLogout={logout} />
+                    
+                    <div className="container">
+                        <div className="dashboard-header">
+                            <h1>Welcome back, {user?.name}!</h1>
+                            <p>Here's your support dashboard overview</p>
+                        </div>
+
+                        <div className="stats-grid">
+                            <Card className="stat-card">
+                                <h3>Total Tickets</h3>
+                                <div className="stat-number">{stats.total}</div>
+                                <p>All support requests</p>
+                            </Card>
+                            
+                            <Card className="stat-card">
+                                <h3>Open</h3>
+                                <div className="stat-number open">{stats.open}</div>
+                                <p>Requiring attention</p>
+                            </Card>
+                            
+                            <Card className="stat-card">
+                                <h3>In Progress</h3>
+                                <div className="stat-number in-progress">{stats.inProgress}</div>
+                                <p>Being worked on</p>
+                            </Card>
+                            
+                            <Card className="stat-card">
+                                <h3>Resolved</h3>
+                                <div className="stat-number closed">{stats.closed}</div>
+                                <p>Successfully closed</p>
+                            </Card>
+                        </div>
+
+                        <div className="quick-actions">
+                            <Card className="action-card">
+                                <h3>Manage Tickets</h3>
+                                <p>View, create, and manage all support tickets</p>
+                                <a href="#/tickets" className="btn btn-primary">
+                                    Go to Tickets
+                                </a>
+                            </Card>
+                        </div>
+                    </div>
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        // Tickets Management Component
+        const Tickets = () => {
+            const { tickets, createTicket, updateTicket, deleteTicket, loading } = useTickets();
+            const { showToast } = useToast();
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            const [editingTicket, setEditingTicket] = useState(null);
+            const [formData, setFormData] = useState({
+                title: '',
+                description: '',
+                status: 'open',
+                priority: 'medium'
+            });
+            const [errors, setErrors] = useState({});
+
+            const validateForm = () => {
+                const newErrors = {};
+                
+                if (!formData.title.trim()) {
+                    newErrors.title = 'Title is required';
+                }
+                
+                if (!formData.status) {
+                    newErrors.status = 'Status is required';
+                } else if (!['open', 'in_progress', 'closed'].includes(formData.status)) {
+                    newErrors.status = 'Invalid status value';
+                }
+
+                setErrors(newErrors);
+                return Object.keys(newErrors).length === 0;
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    showToast('Please fix the form errors', 'error');
+                    return;
+                }
+
+                const result = editingTicket 
+                    ? await updateTicket(editingTicket.id, formData)
+                    : await createTicket(formData);
+
+                if (result.success) {
+                    showToast(
+                        editingTicket ? 'Ticket updated successfully!' : 'Ticket created successfully!',
+                        'success'
+                    );
+                    resetForm();
+                    setIsModalOpen(false);
+                } else {
+                    showToast(result.error, 'error');
+                }
+            };
+
+            const handleEdit = (ticket) => {
+                setEditingTicket(ticket);
+                setFormData({
+                    title: ticket.title,
+                    description: ticket.description || '',
+                    status: ticket.status,
+                    priority: ticket.priority || 'medium'
+                });
+                setIsModalOpen(true);
+            };
+
+            const handleDelete = async (ticketId) => {
+                if (window.confirm('Are you sure you want to delete this ticket?')) {
+                    const result = await deleteTicket(ticketId);
+                    if (result.success) {
+                        showToast('Ticket deleted successfully!', 'success');
+                    } else {
+                        showToast(result.error, 'error');
+                    }
+                }
+            };
+
+            const openCreateModal = () => {
+                resetForm();
+                setIsModalOpen(true);
+            };
+
+            const closeModal = () => {
+                setIsModalOpen(false);
+                resetForm();
+            };
+
+            const resetForm = () => {
+                setFormData({
+                    title: '',
+                    description: '',
+                    status: 'open',
+                    priority: 'medium'
+                });
+                setEditingTicket(null);
+                setErrors({});
+            };
+
+            const handleChange = (e) => {
+                setFormData({
+                    ...formData,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            const getStatusColor = (status) => {
+                switch (status) {
+                    case 'open': return 'status-open';
+                    case 'in_progress': return 'status-in-progress';
+                    case 'closed': return 'status-closed';
+                    default: return 'status-open';
+                }
+            };
+
+            const formatDate = (dateString) => {
+                return new Date(dateString).toLocaleDateString();
+            };
+
+            return (
+                <div className="tickets-page">
+                    <Header />
+                    
+                    <div className="container">
+                        <div className="tickets-header">
+                            <h1>Ticket Management</h1>
+                            <Button 
+                                onClick={openCreateModal}
+                                className="btn-primary"
+                            >
+                                Create New Ticket
+                            </Button>
+                        </div>
+
+                        <div className="tickets-grid">
+                            {tickets.length === 0 ? (
+                                <Card className="empty-state">
+                                    <h3>No tickets yet</h3>
+                                    <p>Create your first ticket to get started!</p>
+                                </Card>
+                            ) : (
+                                tickets.map(ticket => (
+                                    <Card key={ticket.id} className="ticket-card">
+                                        <div className="ticket-header">
+                                            <h3>{ticket.title}</h3>
+                                            <span className={'status-tag ${getStatusColor(ticket.status)}'}>
+                                                {ticket.status.replace('_', ' ')}
+                                            </span>
+                                        </div>
+                                        {ticket.description && (
+                                            <p className="ticket-description">{ticket.description}</p>
+                                        )}
+                                        <div className="ticket-meta">
+                                            <span>Priority: {ticket.priority}</span>
+                                            <span>Created: {formatDate(ticket.createdAt)}</span>
+                                        </div>
+                                        <div className="ticket-actions">
+                                            <Button 
+                                                onClick={() => handleEdit(ticket)}
+                                                className="btn-secondary btn-sm"
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button 
+                                                onClick={() => handleDelete(ticket.id)}
+                                                className="btn-danger btn-sm"
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    <Modal 
+                        isOpen={isModalOpen}
+                        onClose={closeModal}
+                        title={editingTicket ? 'Edit Ticket' : 'Create New Ticket'}
+                    >
+                        <form onSubmit={handleSubmit} className="ticket-form">
+                            <div className="form-group">
+                                <label htmlFor="title">Title *</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    className={errors.title ? 'error' : ''}
+                                />
+                                {errors.title && <span className="error-message">{errors.title}</span>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    rows="4"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="status">Status *</label>
+                                <select
+                                    id="status"
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    className={errors.status ? 'error' : ''}
+                                >
+                                    <option value="open">Open</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                                {errors.status && <span className="error-message">{errors.status}</span>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="priority">Priority</label>
+                                <select
+                                    id="priority"
+                                    name="priority"
+                                    value={formData.priority}
+                                    onChange={handleChange}
+                                >
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+
+                            <div className="form-actions">
+                                <Button 
+                                    type="button"
+                                    onClick={closeModal}
+                                    className="btn-secondary"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    type="submit" 
+                                    disabled={loading}
+                                    className="btn-primary"
+                                >
+                                    {loading ? 'Saving...' : (editingTicket ? 'Update' : 'Create')}
+                                </Button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    <Footer />
+                </div>
+            );
+        };
+
+        // Main App Component with Routing
+        const App = () => {
+            const [currentRoute, setCurrentRoute] = useState(window.location.hash.slice(1) || '/');
+
+            useEffect(() => {
+                const handleHashChange = () => {
+                    setCurrentRoute(window.location.hash.slice(1) || '/');
+                };
+
+                window.addEventListener('hashchange', handleHashChange);
+                return () => window.removeEventListener('hashchange', handleHashChange);
+            }, []);
+
+            const renderRoute = () => {
+                switch (currentRoute) {
+                    case '/':
+                        return React.createElement(Landing);
+                    case '/auth/login':
+                        return React.createElement(Login);
+                    case '/auth/signup':
+                        return React.createElement(Signup);
+                    case '/dashboard':
+                        return React.createElement(() => 
+                            React.createElement(ProtectedRoute, {}, 
+                                React.createElement(Dashboard)
+                            )
+                        );
+                    case '/tickets':
+                        return React.createElement(() => 
+                            React.createElement(ProtectedRoute, {}, 
+                                React.createElement(Tickets)
+                            )
+                        );
+                    default:
+                        return React.createElement(Landing);
+                }
+            };
+
+            return (
+                <ToastProvider>
+                    <AuthProvider>
+                        <TicketProvider>
+                            {renderRoute()}
+                        </TicketProvider>
+                    </AuthProvider>
+                </ToastProvider>
+            );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
